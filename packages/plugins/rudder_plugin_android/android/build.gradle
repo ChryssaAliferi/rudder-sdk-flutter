@@ -17,31 +17,28 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 16
+        // SPIKE (FLT-102): Kotlin SDK requires API 21.
+        minSdk = 21
     }
     lintOptions {
         disable 'InvalidPackage'
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        // SPIKE (FLT-102): Kotlin SDK targets JVM 17.
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    // Only configure the legacy kotlinOptions DSL when we applied the Kotlin plugin ourselves.
-    // On the AGP 9 built-in-Kotlin path the plugin isn't applied, so this DSL doesn't exist;
-    // there the Kotlin JVM target inherits from compileOptions.targetCompatibility above.
     if (agpMajor < 9 || !builtInKotlin) {
         kotlinOptions {
-            jvmTarget = '1.8'
+            jvmTarget = '17'
         }
     }
     namespace = "com.rudderstack.sdk.flutter"
 }
 
 dependencies {
-    // Floor pinned to 1.28.1: this core version scopes the Serializable ProGuard
-    // consumer rule to the persisted config graphs, restoring R8 optimization in
-    // host apps (previously the rule kept every Serializable class app-wide).
-    implementation 'com.rudderstack.android.sdk:core:[1.28.1, 2.0.0)'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    // SPIKE: legacy com.rudderstack.android.sdk:core and gson replaced by the Kotlin SDK.
+    // kotlinx-serialization-json comes in transitively (exposed as `api` by the Kotlin core module).
+    implementation 'com.rudderstack.sdk.kotlin:android:2.1.0'
 }
